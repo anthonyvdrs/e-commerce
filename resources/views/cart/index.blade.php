@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('extra-meta')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
 @if (Cart::count() > 0)
         <div class="px-4 px-lg-0">
@@ -43,14 +47,19 @@
                                         </div>
                                     </div>
                                     </th>
-                                    <td class="border-0 align-middle"><strong>{{ $product->model->getPrice() }}</strong></td>
-                                    <td class="border-0 align-middle"><strong>1</strong></td>
+                                    <td class="border-0 align-middle"><strong>{{ getPrice($product->subtotal()) }}</strong></td>
+                                    <td class="border-0 align-middle">
+                                    <select name="qty" id="qty" data-id="{{ $product->rowId }}" class="custom-select">
+                                            @for ($i = 1; $i <= 6; $i++)
+                                                <option value="{{ $i }}" {{ $i == $product->qty ? 'selected' : '' }}>{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                    </td>
                                     <td class="border-0 align-middle">
                                         <form action="{{ route('cart.destroy', $product->rowId) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" href="" class="text-dark"><i class="fa fa-trash"></i></a>
-
                                         </form>
                                     </td>
                                 </tr>
@@ -88,7 +97,7 @@
                     <p class="font-italic mb-4">Shipping and additional costs are calculated based on values you have entered.</p>
                     <ul class="list-unstyled mb-4">
                     <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Sous-total</strong><strong>{{ getPrice(Cart::subtotal()) }}</strong></li>
-                       <!-- <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and handling</strong><strong>$10.00</strong></li>-->
+                    <!-- <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and handling</strong><strong>$10.00</strong></li>-->
                     <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Taxe</strong><strong>{{ getPrice(Cart::tax()) }}</strong></li>
                         <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Total</strong>
                         <h5 class="font-weight-bold">{{ getPrice(Cart::total()) }}</h5>
@@ -109,4 +118,35 @@
 </div>
     
 @endif
+@endsection
+
+@section('extra-js')
+    <script>
+        var selects = document.querySelectorAll('#qty');
+        Array.from(selects).forEach((element) =>{
+            element.addEventListener('change', function (){
+                var rowId = this.getAttribute('data-id');
+                var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                fetch(
+                    `/panier/${rowId}`,{
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json, text-plain, */*",
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRF-TOKEN": token
+                        },
+                        method: 'patch',
+                        body: JSON.stringify({
+                            qty: this.value
+                        })
+                    }
+                ).then((data) => {
+                    console.log(data);
+                    location.reload();
+                }).catch((error) => {
+                    console.log(error)
+                })
+            });
+        });
+    </script>
 @endsection
