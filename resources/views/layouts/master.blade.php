@@ -10,6 +10,9 @@
     @yield('extra-meta')
     <title>Laravel - Project</title>
 
+        <!-- Scripts -->
+        <script src="{{ asset('js/app.js') }}" defer></script>
+
     @yield('extra-script')
 
     <!-- Bootstrap core CSS -->
@@ -153,6 +156,7 @@ h1, h2, h3, h4, h5, h6 {
     </style>
     <!-- Custom styles for this template -->
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/ecommerce.css') }}">
   
   </head>
   <body>
@@ -169,7 +173,7 @@ h1, h2, h3, h4, h5, h6 {
         <a class="text-muted" href="#" aria-label="Search">
           @include('partials.search')
         </a>
-        <a class="btn btn-sm btn-outline-secondary" href="#">Sign up</a>
+        @include('partials.auth')
       </div>
     </div>
   </header>
