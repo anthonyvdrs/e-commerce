@@ -21,7 +21,7 @@
                     </div>
                     <!-- We'll put the error messages in this element -->
                     <div id="card-errors" role="alert"></div>
-                    <button id="submit" class="btn btn-success mt-4">Procéder au paiement ({{ getPrice(Cart::total()) }})</button>
+                    <button id="submit" class="btn btn-success mt-4">Procéder au paiement ({{ getPrice($total) }})</button>
             </form>
         </div>
     </div>
